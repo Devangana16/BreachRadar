@@ -22,6 +22,7 @@ app.get("/", (req, res) => {
   res.send("Backend is live 🚀");
 });
 
+console.log("MONGO URI:", process.env.MONGODB_URI);
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
