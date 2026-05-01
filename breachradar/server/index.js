@@ -8,7 +8,7 @@ const { execSync } = require('child_process');
 const cron = require('node-cron');
 const path = require('path');
 
-dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config();
 
 const ScanHistory = require('./models/ScanHistory');
 const AlertSubscription = require('./models/AlertSubscription');
