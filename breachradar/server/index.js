@@ -18,6 +18,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.get("/", (req, res) => {
+  res.send("Backend is live 🚀");
+});
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
@@ -47,11 +51,11 @@ const validateEmailParam = [
 // Risk scoring helper
 const calculateRisk = (breaches) => {
   if (!breaches || breaches.length === 0) return 0;
-  
+
   let maxBreachScore = 0;
   const twoYearsAgo = new Date();
   twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
-  
+
   const sensitiveTypes = {
     'Passwords': 35, 'Credit card details': 35, 'Partial credit card data': 20,
     'Social security numbers': 40, 'Government IDs': 35, 'Bank account numbers': 35,
@@ -59,35 +63,35 @@ const calculateRisk = (breaches) => {
     'Email addresses': 8, 'Usernames': 8, 'Names': 5, 'IP addresses': 5,
     'Geographic locations': 5, 'Social media profiles': 5, 'Device information': 5,
   };
-  
+
   let hasRecentBreach = false;
-  
+
   breaches.forEach(b => {
     let currentBreachScore = 0;
     const dataTypes = (b.xposed_data || '').split(';').map(s => s.trim());
-    
+
     // Sum up score for THIS breach
     dataTypes.forEach(dt => { currentBreachScore += sensitiveTypes[dt] || 4; });
-    
+
     // Cap a single breach base score to 75
-    currentBreachScore = Math.min(currentBreachScore, 75); 
-    
+    currentBreachScore = Math.min(currentBreachScore, 75);
+
     if (currentBreachScore > maxBreachScore) {
-        maxBreachScore = currentBreachScore;
+      maxBreachScore = currentBreachScore;
     }
-    
+
     const yr = parseInt(b.xposed_date, 10);
     const bdate = new Date(yr, 0, 1);
     if (bdate >= twoYearsAgo) hasRecentBreach = true;
   });
-  
+
   // Base score is the worst breach. Then add a diminishing penalty for additional breaches.
   // Cap the volume penalty to 15 max.
   const volumePenalty = Math.min(breaches.length, 15);
-  
+
   let totalScore = maxBreachScore + volumePenalty;
   if (hasRecentBreach) totalScore += 10; // add 10 if there's a recent breach
-  
+
   return Math.min(Math.round(totalScore), 100);
 };
 
@@ -219,10 +223,10 @@ app.get('/api/stats', async (req, res) => {
   try {
     const totalScans = await ScanHistory.countDocuments();
     const allScans = await ScanHistory.find({}, 'breachCount severity');
-    
+
     const totalBreaches = allScans.reduce((acc, scan) => acc + (scan.breachCount || 0), 0);
     const criticalCount = allScans.filter(scan => scan.severity === 'Critical').length;
-    
+
     res.json({ totalScans, totalBreaches, criticalCount });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
