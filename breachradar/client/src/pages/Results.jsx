@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AlertToggle from '../components/AlertToggle';
 
-const API = import.meta.env.VITE_API_URL || '';
+const API = import.meta.env.VITE_API_URL;
 
 // --- Icons ---
 const BackIcon = () => (

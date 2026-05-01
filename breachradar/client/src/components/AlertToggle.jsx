@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export default function AlertToggle({ email }) {
   const [subscribed, setSubscribed] = useState(false);
-  const API = import.meta.env.VITE_API_URL || '';
+  const API = import.meta.env.VITE_API_URL;
 
   // Optionally fetch existing subscription status (if you implement a GET endpoint per email)
   useEffect(() => {

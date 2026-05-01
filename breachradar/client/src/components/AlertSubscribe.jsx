@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const AlertSubscribe = ({ email }) => {
+  const API = import.meta.env.VITE_API_URL;
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -9,10 +10,10 @@ const AlertSubscribe = ({ email }) => {
     setLoading(true);
     try {
       if (subscribed) {
-        await axios.delete(`${import.meta.env.VITE_API_URL || ''}/api/unsubscribe/${email}`);
+        await axios.delete(`${API}/api/unsubscribe/${email}`);
         setSubscribed(false);
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL || ''}/api/subscribe`, { email });
+        await axios.post(`${API}/api/subscribe`, { email });
         setSubscribed(true);
       }
     } catch (error) {
